@@ -1,0 +1,23 @@
+---
+title: "Monitoring with Sentry"
+sidebarTitle: "Sentry"
+icon: "triangle-exclamation"
+---
+
+## Provide your Sentry credentials
+
+You will need to add the following environment variables in order to use
+Sentry in Bigbytes:
+* `SENTRY_DSN`: sentry dsn url
+* `SENTRY_TRACES_SAMPLE_RATE`: (optional) value between 0 and 1
+
+## Using Sentry in Bigbytes
+
+Once you set the `SENTRY_DSN` environment variable, the Sentry integration will be
+enabled the next time you start the Bigbytes server.
+
+The following errors will be reported to Sentry:
+
+* Exceptions from trigger runs.
+* Exceptions from the Bigbytes scheduler.
+* Exceptions from runs started by the `bigbytes run` CLI command.

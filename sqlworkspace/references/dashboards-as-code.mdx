@@ -1,0 +1,85 @@
+---
+title: "Dashboards as code"
+description: "You can download your charts and dashboards as code, make changes, then upload your changes back to your Bigbytes project using the CLI. Content as code is also useful for creating new Bigbytes projects where you want the content to be copied from an existing project and added to your new project."
+---
+
+
+## `bigbytes download` downloads content as code
+
+From the [Bigbytes CLI](/references/bigbytes-cli), you can use the command `bigbytes download` to download all of the charts and dashboards from your Bigbytes project as code. All of the charts and dashboards will be written as .yml files to a `bigbytes` directory wherever you're running the command.
+
+E.g. if you're running this command inside your dbt directory (eg: `/home/javi/dbt`) then it will create a folder (`/home/javi/dbt/bigbytes`). If you're running this command in `/home/javi/documents` it will create the folder in `/home/javi/documents/bigbytes`.
+
+<Frame>
+<img src="/images/references/download-content-924b51a78c9840990608f3ed81f80b56.jpg"/>
+</Frame>
+
+#### Running `bigbytes download` will overwrite any changes you have locally
+For example:
+
+* I run `bigbytes download` and one of the charts that is downloaded is `emea-revenue-per-month.yml`
+* I make some changes to the `emea-revenue-per-month.yml` file and save them
+* I **do not** upload my changes, they are just saved locally
+* I run `bigbytes download` again
+* The changes I made to `emea-revenue-per-month.yml` will be overwritten by the latest chart version downloaded from the Bigbytes application
+
+## `bigbytes upload` updates any content as code to your project
+
+From the [Bigbytes CLI](/references/bigbytes-cli), you can use the command `bigbytes upload` to upload any changes you've made to your charts or dashboards as code. To upload new charts that you've created as code to your Bigbytes project, you need to run `bigbytes upload --force`
+
+#### Only content as code that you've made changes to will be uploaded
+
+For example:
+
+* I have a chart that I've downloaded as code called `total-sales-worldwide.yml` in my `bigbytes/` directory
+* I only make changes to that chart's .yml
+* I run `bigbytes upload`
+* `total-sales-worldwide.yml` is the only file that gets uploaded because it's the only file that I made changes to
+
+For example:
+
+* Katie has a chart that she's downloaded as code called `total-sales-worldwide.yml` in her `bigbytes/` directory
+* She doesn't make any changes to the chart as code
+* Javi opens the same chart, `Total sales worldwide`, in the Bigbytes application, makes some changes, and saves them
+* Now, Katie's `total-sales-worldwide.yml` and the `Total sales worldwide` chart in the application are different.
+* Katie runs `bigbytes upload`
+* Katie's `total-sales-worldwide.yml` does **not** get uploaded because she made no changes to the chart as code
+* Javi's changes to the `Total sales worldwide` chart that he made in the Bigbytes application are **not** overwritten (the version he created is what we see in the Bigbytes application)
+
+#### Content that's been downloaded as code can still be updated in the Bigbytes application
+
+For example:
+
+* There is a Bigbytes project called `Stellar Marketing`
+* Priyanka runs `bigbytes download` and downloads all of the project's content as code, including a chart called `Total new clients`
+* Jake opens the `Total new clients` chart in the Bigbytes application and makes some changes
+* Priyanka doesn't run `bigbytes download`, so the `total-new-clients.yml` chart that Priyanka has as code is the old version of the chart, before Jake updated it.
+* Priyanka makes changes to `total-new-clients.yml` then runs `bigbytes upload` and uploads her changes and overwrites the changes that Jake made in the Bigbytes application.
+* Both Jake and Priyanka can update the same chart as code, or in the Bigbytes application.
+
+## Bigbytes content templates
+
+You can use the `bigbytes download` and `bigbytes upload` commands to easily build templates for Bigbytes content and reuse these templates to build new or update existing projects.
+
+### Creating a new Bigbytes project from a Bigbytes template
+
+If you're creating many dbt projects with similar models and want to easily spin up new versions of these projects, but with different table, field, or chart names, then you can use content as code to create a Bigbytes template of your project to reuse.
+
+To do this, you'll need to:
+
+* Take your existing Bigbytes project with all of the content that you want to copy.
+* In the CLI, run `bigbytes download` to download all of the content as code from the project
+* Navigate to your new dbt project that you want to connect to Bigbytes.
+* Copy-paste over the `bigbytes/` directory inside your new dbt project with all of the content as code from your template project (or, only copy over the content that you want to use in your new project)
+* Once you're happy with your content, you're going to run `bigbytes config set-project` and select your new Bigbytes project from the list of projects
+* Then, you'll run `bigbytes upload --force` to upload all of the content as code you've added in your `bigbytes/` directory to your new Bigbytes project
+
+### Adding content to an existing project from a Bigbytes template
+
+Sometimes, if you're managing multiple dbt projects with similar models, you want to be able to easily create and manage the same charts and dashboards across all of the projects at the same time. You can do this with content as code to create a Bigbytes template project.
+
+* You want to create a Bigbytes project that only contains all of the content that you want to share across your projects
+* From your CLI, you can run `bigbytes download` to download all of this content as code
+* You can then copy-paste the .yml files that get written across to any of the other dbt projects you have where you want to reuse the same charts and dashboards.
+* Once you've copied over any content that you wanted to manage across projects, from the CLI, you should run `bigbytes config set-project` and select the project where you've added these new charts/dashboards as code to.
+* Then, you should run `bigbytes upload` to upload all of the new content as code.

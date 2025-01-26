@@ -1,0 +1,34 @@
+---
+title: "Run docker image as non-root user"
+sidebarTitle: "Run as non-root user"
+icon: "user"
+description: "Run Bigbytes docker image as non-root user to restrict access to the system"
+---
+
+By default, the official Bigbytes docker images in DockerHub are using the root users. For production deployment,
+it's recommended to use non-root users in the docker image to restrict access to the system for better security.
+Here is the Dockerfile template that you can use to build your custom docker image that runs Bigbytes as non-root user.
+
+```dockerfile
+ARG VERSION
+
+FROM getbigbytes/bigbytes:$VERSION
+
+# Add non-root user for Bigbytes service
+RUN adduser --disabled-password --gecos '' bigbytes && adduser bigbytes bigbytes
+
+# Grant the user permissions to the Bigbytes related directories
+RUN mkdir /home/src/bigbytes_data; chown -R bigbytes /home/src/bigbytes_data
+RUN mkdir /home/src/default_repo; chown -R bigbytes /home/src/default_repo
+
+RUN pip3 install -r path/to/requirements.txt
+
+# Set the Bigbytes user
+USER bigbytes
+
+ENV PYTHONPATH="${PYTHONPATH}:/home/bigbytes/.local/lib/python3.10/site-packages"
+
+WORKDIR /home/src
+
+CMD ["/bin/sh", "-c", "/app/run_app.sh"]
+```
